@@ -23,6 +23,7 @@ RUN cd /tmp/ && \
     curl -O https://pecl.php.net/get/xhprof-0.9.4.tgz && \
     tar zxvf xhprof-0.9.4.tgz && \
     mv xhprof-0.9.4/extension /usr/src/php/ext/xhprof && \
-    docker-php-ext-install xhprof
+    docker-php-ext-install xhprof && \
+    RUN echo "xhprof.output_dir=/tmp" >> /usr/local/etc/php/conf.d/docker-php-ext-xhprof.ini 
 
 COPY php.ini /usr/local/etc/php/
