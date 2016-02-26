@@ -18,4 +18,11 @@ RUN apt-get update && apt-get install -y libmemcached-dev zlib1g-dev libncurses5
   rm /usr/src/php/ext/memcached.tgz && \
   docker-php-ext-install memcached-2.2.0
 
+# xhprof
+RUN cd /tmp/ && \
+    curl -O https://pecl.php.net/get/xhprof-0.9.4.tgz && \
+    tar zxvf xhprof-0.9.4.tgz && \
+    mv xhprof-0.9.4/extension /usr/src/php/ext/xhprof && \
+    docker-php-ext-install xhprof
+
 COPY php.ini /usr/local/etc/php/
