@@ -12,7 +12,14 @@ RUN apt-get update && apt-get install -y libpng12-dev libjpeg-dev libpq-dev \
   && docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
   && docker-php-ext-install gd mbstring pdo pdo_mysql zip calendar
 
-RUN apt-get update && apt-get install -y libmemcached-dev \
-    && pecl install memcached \
+RUN apt-get update && apt-get install -y libmemcached-dev git \
+    && cd /tmp
+    && git clone https://github.com/php-memcached-dev/php-memcached \
+    && cd php-memcached \
+    && git checkout php7 \
+    && phpize \
+    && PATH=/opt/sp/php7.0/bin:$PATH ./configure --disable-memcached-sasl \
+    && make \
+    && make install \
     && docker-php-ext-enable memcached
 
