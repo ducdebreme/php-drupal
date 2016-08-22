@@ -23,4 +23,6 @@ RUN apt-get update && apt-get install -y libmemcached-dev git \
     && make install \
     && docker-php-ext-enable memcached
 
+RUN apt-get install -y mysql-client openssh-client vim-tiny git
+
 COPY php.ini /usr/local/etc/php/
