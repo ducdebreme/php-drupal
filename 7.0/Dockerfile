@@ -4,7 +4,7 @@
 # from https://www.drupal.org/requirements/php#drupalversions
 FROM php:7.0-apache
 
-RUN a2enmod rewrite
+RUN a2enmod rewrite headers
 
 # install the PHP extensions we need
 RUN apt-get update && apt-get install -y libpng12-dev libjpeg-dev libpq-dev libxml2-dev \
