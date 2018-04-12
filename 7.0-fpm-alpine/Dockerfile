@@ -25,6 +25,7 @@ RUN set -ex \
 		opcache \
 		pdo_mysql \
 		zip \
+		calendar \
 	&& runDeps="$( \
 		scanelf --needed --nobanner --format '%n#p' --recursive /usr/local \
 			| tr ',' '\n' \
