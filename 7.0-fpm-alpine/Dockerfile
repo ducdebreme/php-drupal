@@ -26,6 +26,7 @@ RUN set -ex \
 		pdo_mysql \
 		zip \
 		calendar \
+		soap \
 	&& runDeps="$( \
 		scanelf --needed --nobanner --format '%n#p' --recursive /usr/local \
 			| tr ',' '\n' \
