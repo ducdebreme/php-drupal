@@ -16,6 +16,7 @@ RUN set -ex \
 		freetype-dev \
 		libjpeg-turbo-dev \
 		libpng-dev \
+		libxml2-dev \
 	&& docker-php-ext-configure gd \
 		--with-freetype-dir=/usr/include/ \
 		--with-jpeg-dir=/usr/include/ \
@@ -26,7 +27,6 @@ RUN set -ex \
 		pdo_mysql \
 		zip \
 		calendar \
-		libxml \
 		soap \
 	&& runDeps="$( \
 		scanelf --needed --nobanner --format '%n#p' --recursive /usr/local \
