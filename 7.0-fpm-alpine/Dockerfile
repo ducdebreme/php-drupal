@@ -35,6 +35,15 @@ RUN set -ex \
 			| awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
 	)" \
 	&& apk add --virtual .drupal-phpexts-rundeps $runDeps \
+	&& apk add --no-cache $PHPIZE_DEPS \
+	&& pecl install xdebug-2.6.1 \
+	&& echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
+	&& echo "xdebug.remote_enable=on" >> /usr/local/etc/php/conf.d/xdebug.ini \
+	&& echo "xdebug.cli_color=1" >> /usr/local/etc/php/conf.d/xdebug.ini \
+	&& echo "xdebug.idekey=PHPSTORM" >> /usr/local/etc/php/conf.d/xdebug.ini \
+	&& echo "xdebug.max_nesting_level=1024" >> /usr/local/etc/php/conf.d/xdebug.ini \
+	&& echo "xdebug.remote_connect_back=on" >> /usr/local/etc/php/conf.d/xdebug.ini \
+	&& echo "xdebug.remote_port=9001" >> /usr/local/etc/php/conf.d/xdebug.ini \
 	&& apk del .build-deps
 
 # set recommended PHP.ini settings
