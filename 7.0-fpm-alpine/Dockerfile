@@ -8,10 +8,13 @@
 #
 FROM php:7.0-fpm-alpine
 
-# install the PHP extensions we need
+# env vars for building xdebug
+ENV BUILD_DEPS autoconf g++ make
+# install the PHP extensions we neeeeeeed
 # postgresql-dev is needed for https://bugs.alpinelinux.org/issues/3642
 RUN set -ex \
 	&& apk add --no-cache --virtual .build-deps \
+			$BUILD_DEPS \
 		coreutils \
 		freetype-dev \
 		libjpeg-turbo-dev \
@@ -28,6 +31,8 @@ RUN set -ex \
 		zip \
 		calendar \
 		soap \
+	&& pecl install xdebug-2.6.1 \
+	&& docker-php-ext-enable xdebug \
 	&& runDeps="$( \
 		scanelf --needed --nobanner --format '%n#p' --recursive /usr/local \
 			| tr ',' '\n' \
@@ -35,25 +40,9 @@ RUN set -ex \
 			| awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
 	)" \
 	&& apk add --virtual .drupal-phpexts-rundeps $runDeps \
-	&& apk add --no-cache $PHPIZE_DEPS \
-	&& pecl install xdebug-2.6.1 \
-	&& echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
-	&& echo "xdebug.remote_enable=on" >> /usr/local/etc/php/conf.d/xdebug.ini \
-	&& echo "xdebug.cli_color=1" >> /usr/local/etc/php/conf.d/xdebug.ini \
-	&& echo "xdebug.idekey=PHPSTORM" >> /usr/local/etc/php/conf.d/xdebug.ini \
-	&& echo "xdebug.max_nesting_level=1024" >> /usr/local/etc/php/conf.d/xdebug.ini \
-	&& echo "xdebug.remote_connect_back=on" >> /usr/local/etc/php/conf.d/xdebug.ini \
-	&& echo "xdebug.remote_port=9001" >> /usr/local/etc/php/conf.d/xdebug.ini \
 	&& apk del .build-deps
 
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
-RUN { \
-		echo 'opcache.memory_consumption=128'; \
-		echo 'opcache.interned_strings_buffer=8'; \
-		echo 'opcache.max_accelerated_files=4000'; \
-		echo 'opcache.revalidate_freq=5'; \
-		echo 'opcache.fast_shutdown=1'; \
-		echo 'opcache.enable_cli=1'; \
-	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
-
+COPY opcache-recommended.ini ./usr/local/etc/php/conf.d/
+COPY xdebug.ini ./usr/local/etc/php/conf.d
