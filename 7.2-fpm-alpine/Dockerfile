@@ -8,10 +8,13 @@
 #
 FROM php:7.2-fpm-alpine
 
-# install the PHP extensions we need
+# env vars for building xdebug
+ENV BUILD_DEPS autoconf g++ make
+# install the PHP extensions we neeeeeeed
 # postgresql-dev is needed for https://bugs.alpinelinux.org/issues/3642
 RUN set -ex \
 	&& apk add --no-cache --virtual .build-deps \
+			$BUILD_DEPS \
 		coreutils \
 		freetype-dev \
 		libjpeg-turbo-dev \
@@ -28,6 +31,8 @@ RUN set -ex \
 		zip \
 		calendar \
 		soap \
+	&& pecl install xdebug-2.7.2 \
+	&& docker-php-ext-enable xdebug \
 	&& runDeps="$( \
 		scanelf --needed --nobanner --format '%n#p' --recursive /usr/local \
 			| tr ',' '\n' \
@@ -39,11 +44,5 @@ RUN set -ex \
 
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
-RUN { \
-		echo 'opcache.memory_consumption=128'; \
-		echo 'opcache.interned_strings_buffer=8'; \
-		echo 'opcache.max_accelerated_files=4000'; \
-		echo 'opcache.revalidate_freq=5'; \
-		echo 'opcache.fast_shutdown=1'; \
-		echo 'opcache.enable_cli=1'; \
-} > /usr/local/etc/php/conf.d/opcache-recommended.ini
+COPY opcache-recommended.ini /usr/local/etc/php/conf.d/
+COPY xdebug.ini /usr/local/etc/php/conf.d
