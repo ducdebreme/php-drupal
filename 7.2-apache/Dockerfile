@@ -23,6 +23,7 @@ RUN set -eux; \
 		libpq-dev \
 		libzip-dev \
 		libxml2-dev \
+		unzip \
 	; \
 	\
 	docker-php-ext-configure gd \
