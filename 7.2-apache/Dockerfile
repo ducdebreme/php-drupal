@@ -64,6 +64,6 @@ RUN { \
 		echo 'opcache.fast_shutdown=1'; \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
 	
-RUN apt-get install unzip
+RUN apt-get update && apt-get install unzip
 
 
