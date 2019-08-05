@@ -23,7 +23,6 @@ RUN set -eux; \
 		libpq-dev \
 		libzip-dev \
 		libxml2-dev \
-		unzip \
 	; \
 	\
 	docker-php-ext-configure gd \
@@ -64,4 +63,7 @@ RUN { \
 		echo 'opcache.revalidate_freq=60'; \
 		echo 'opcache.fast_shutdown=1'; \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
+	
+RUN apt-get install unzip
+
 
