@@ -1,6 +1,9 @@
 # from https://www.drupal.org/docs/8/system-requirements/drupal-8-php-requirements
 FROM php:7.4-fpm-alpine
 
+# env vars for building xdebug
+ENV BUILD_DEPS autoconf g++ make
+
 # install the PHP extensions we need
 # postgresql-dev is needed for https://bugs.alpinelinux.org/issues/3642
 RUN set -eux; \
@@ -11,7 +14,12 @@ RUN set -eux; \
 		libjpeg-turbo-dev \
 		libpng-dev \
 		libzip-dev \
-		postgresql-dev \
+		libxml2-dev \
+	; \
+	\
+	apk add --no-cache $PHPIZE_DEPS \
+		&& pecl install xdebug-2.9.6 \
+		&& docker-php-ext-enable xdebug \
 	; \
 	\
 	docker-php-ext-configure gd \
@@ -23,8 +31,9 @@ RUN set -eux; \
 		gd \
 		opcache \
 		pdo_mysql \
-		pdo_pgsql \
 		zip \
+		calendar \
+		soap \
 	; \
 	\
 	runDeps="$( \
@@ -46,15 +55,4 @@ RUN { \
 		echo 'opcache.fast_shutdown=1'; \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
-# https://www.drupal.org/node/3060/release
-ENV DRUPAL_VERSION 7.72
-ENV DRUPAL_MD5 ed967195ce0e78bf2ab7245aaf0649d6
-
-RUN set -eux; \
-	curl -fSL "https://ftp.drupal.org/files/projects/drupal-${DRUPAL_VERSION}.tar.gz" -o drupal.tar.gz; \
-	echo "${DRUPAL_MD5} *drupal.tar.gz" | md5sum -c -; \
-	tar -xz --strip-components=1 -f drupal.tar.gz; \
-	rm drupal.tar.gz; \
-	chown -R www-data:www-data sites modules themes
-
-# vim:set ft=dockerfile:
+COPY xdebug.ini /usr/local/etc/php/conf.d
