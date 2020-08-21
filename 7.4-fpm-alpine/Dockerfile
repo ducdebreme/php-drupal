@@ -43,7 +43,7 @@ RUN set -eux; \
 			| awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
 	)"; \
 	apk add --virtual .drupal-phpexts-rundeps $runDeps; \
-	apk del .build-deps
+	apk del .build-deps $PHPIZE_DEPS
 
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
